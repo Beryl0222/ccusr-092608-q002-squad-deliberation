@@ -1,0 +1,5 @@
+[project]
+name = "squad-deliberation"
+version = "0.1.0"
+description = "国家队梯队出场议事库领域契约"
+requires-python = ">=3.11"

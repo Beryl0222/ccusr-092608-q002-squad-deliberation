@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "国家队梯队出场议事库领域事件",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "aggregate_type",
+    "aggregate_id",
+    "occurred_at",
+    "version",
+    "payload"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "EVIDENCE_RECORDED",
+        "PROPOSAL_SUBMITTED",
+        "OPINION_SIGNED",
+        "LINEUP_LOCKED",
+        "REVIEW_COMPLETED"
+      ]
+    },
+    "aggregate_type": {
+      "type": "string",
+      "enum": [
+        "athlete_profile",
+        "selection_evidence",
+        "lineup_proposal",
+        "development_commitment"
+      ]
+    },
+    "aggregate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "payload_required_by_event": {
+    "PROPOSAL_SUBMITTED": [
+      "competition_ref",
+      "roster"
+    ],
+    "OPINION_SIGNED": [
+      "reviewer_role",
+      "position"
+    ],
+    "LINEUP_LOCKED": [
+      "evidence_cutoff",
+      "decision_reason"
+    ]
+  },
+  "additionalProperties": false
+}
