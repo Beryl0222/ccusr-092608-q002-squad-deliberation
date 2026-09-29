@@ -53,4 +53,17 @@ def validate_event(payload: Any, schema: Mapping[str, Any]) -> list[ContractIssu
         for field in schema.get("payload_required_by_event", {}).get(event_type, []):
             if field not in body:
                 issues.append(ContractIssue(f"payload.{field}", "required", "事件载荷缺少必填字段"))
+        if event_type == "EVIDENCE_RECORDED":
+            kind = body.get("evidence_kind")
+            if isinstance(kind, str) and kind not in schema.get("evidence_kinds", []):
+                issues.append(ContractIssue("payload.evidence_kind", "unsupported_value", "证据种类未在契约中登记"))
+            observed = body.get("observed_at")
+            if "observed_at" in body and (not isinstance(observed, str) or not _timezone_is_explicit(observed)):
+                issues.append(ContractIssue("payload.observed_at", "timezone_required", "观察时间必须包含时区"))
+            if kind == "medical_clearance" and not body.get("restriction_ref"):
+                issues.append(ContractIssue("payload.restriction_ref", "required", "医疗解禁必须指向被解除的限制"))
+        if event_type == "OPINION_SIGNED":
+            position = body.get("position")
+            if isinstance(position, str) and position not in schema.get("opinion_positions", []):
+                issues.append(ContractIssue("payload.position", "unsupported_value", "意见立场未在契约中登记"))
     return sorted(issues, key=lambda issue: (issue.field, issue.code))

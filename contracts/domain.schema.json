@@ -51,19 +51,78 @@
       "type": "object"
     }
   },
+  "evidence_kinds": [
+    "eligibility",
+    "training_load",
+    "match_sample",
+    "opponent_analysis",
+    "medical_restriction",
+    "medical_clearance",
+    "coach_observation",
+    "development_goal",
+    "matchup_recusal",
+    "post_match_feedback",
+    "training_commitment",
+    "commitment_outcome"
+  ],
+  "opinion_positions": [
+    "agree",
+    "oppose",
+    "abstain"
+  ],
   "payload_required_by_event": {
+    "EVIDENCE_RECORDED": [
+      "evidence_kind",
+      "subject_ref",
+      "observed_at",
+      "source_role"
+    ],
     "PROPOSAL_SUBMITTED": [
       "competition_ref",
       "roster"
     ],
     "OPINION_SIGNED": [
       "reviewer_role",
-      "position"
+      "position",
+      "proposal_hash"
     ],
     "LINEUP_LOCKED": [
       "evidence_cutoff",
       "decision_reason"
+    ],
+    "REVIEW_COMPLETED": [
+      "competition_ref",
+      "outcome"
     ]
+  },
+  "payload_notes": {
+    "EVIDENCE_RECORDED": {
+      "evidence_kind": "证据种类，取值见 evidence_kinds；不同种类是相互独立的证据线，不得相互覆盖",
+      "subject_ref": "证据指向的对象，通常是运动员档案标识；回避关系为对阵双方标识",
+      "observed_at": "事实发生或观察时间（带时区），用于证据截止线判定",
+      "source_role": "登记证据的角色；medical_restriction 与 medical_clearance 只能由 medical 角色登记",
+      "restriction_ref": "解除医疗限制时，对应 medical_restriction 证据的标识",
+      "confidence": "登记方自评置信度；被接受的不确定性在事实链中继续展示",
+      "content": "结构化证据内容，由上层服务解释，契约不做改写"
+    },
+    "PROPOSAL_SUBMITTED": {
+      "competition_ref": "目标比赛标识",
+      "roster": "出场方案：每条含 slot（出场次序）、athlete_ref、status（starter/substitute）",
+      "expected_version": "提交方基于的阵容聚合版本，用于并行冲突检测"
+    },
+    "OPINION_SIGNED": {
+      "reviewer_role": "签署意见的复核角色；proposer 不得终审本人方案",
+      "position": "agree / oppose / abstain；少数意见同样持久保留",
+      "proposal_hash": "意见绑定的方案内容哈希；方案内容漂移后旧意见不再满足复议后版本"
+    },
+    "LINEUP_LOCKED": {
+      "evidence_cutoff": "证据截止线；锁定只依据该时间点之前可获得的证据",
+      "decision_reason": "终审说明，必须引用证据与少数意见"
+    },
+    "REVIEW_COMPLETED": {
+      "competition_ref": "已完赛的比赛标识",
+      "outcome": "比赛结果与赛后反馈摘要；赛后数据只触发未来方案重算"
+    }
   },
   "additionalProperties": false
 }

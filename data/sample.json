@@ -1,9 +1,19 @@
 {
   "event_id": "092601-002-sample-001",
   "event_type": "EVIDENCE_RECORDED",
-  "aggregate_type": "athlete_profile",
-  "aggregate_id": "squad_deliberation-001",
+  "aggregate_type": "selection_evidence",
+  "aggregate_id": "evidence-0001",
   "occurred_at": "2026-09-25T10:00:00+08:00",
   "version": 1,
-  "payload": {}
+  "payload": {
+    "evidence_kind": "coach_observation",
+    "subject_ref": "athlete-017",
+    "observed_at": "2026-09-25T09:30:00+08:00",
+    "source_role": "coach",
+    "source_ref": "coach-li",
+    "confidence": "medium",
+    "content": {
+      "note": "团体赛前训练状态回升，关键分衔接更果断"
+    }
+  }
 }

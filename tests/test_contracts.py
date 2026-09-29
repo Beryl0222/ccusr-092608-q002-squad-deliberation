@@ -36,6 +36,35 @@ class ContractTests(unittest.TestCase):
         issues = validate_event(dict(self.sample, event_type="UNKNOWN"), self.schema)
         self.assertIn(("event_type", "unsupported_value"), [(x.field, x.code) for x in issues])
 
+    def test_evidence_kind_must_be_registered(self) -> None:
+        event = dict(self.sample, payload=dict(self.sample["payload"], evidence_kind="gut_feeling"))
+        self.assertIn(
+            ("payload.evidence_kind", "unsupported_value"),
+            [(x.field, x.code) for x in validate_event(event, self.schema)],
+        )
+
+    def test_medical_clearance_must_reference_restriction(self) -> None:
+        event = dict(
+            self.sample,
+            payload=dict(self.sample["payload"], evidence_kind="medical_clearance"),
+        )
+        self.assertIn(
+            ("payload.restriction_ref", "required"),
+            [(x.field, x.code) for x in validate_event(event, self.schema)],
+        )
+
+    def test_opinion_position_is_checked(self) -> None:
+        event = dict(
+            self.sample,
+            event_type="OPINION_SIGNED",
+            aggregate_type="lineup_proposal",
+            payload={"reviewer_role": "head_coach", "position": "maybe", "proposal_hash": "h1"},
+        )
+        self.assertIn(
+            ("payload.position", "unsupported_value"),
+            [(x.field, x.code) for x in validate_event(event, self.schema)],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
