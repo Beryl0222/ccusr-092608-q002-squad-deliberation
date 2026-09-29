@@ -22,6 +22,37 @@ def _timezone_is_explicit(value: str) -> bool:
     return parsed.tzinfo is not None and parsed.utcoffset() is not None
 
 
+def _check_enum_path(
+    body: Any,
+    path: str,
+    allowed: list[str],
+    issues: list[ContractIssue],
+    report_path: str | None = None,
+) -> None:
+    """按点分路径校验枚举；任一段遇到数组则对每个元素继续走剩余路径。"""
+
+    full_path = report_path or path
+    segments = path.split(".")
+    current: Any = body
+    for depth, segment in enumerate(segments):
+        remaining = segments[depth + 1 :]
+        if isinstance(current, list):
+            for item in current:
+                _check_enum_path(item, ".".join(segments[depth:]), allowed, issues, full_path)
+            return
+        if not isinstance(current, Mapping) or segment not in current:
+            return
+        current = current[segment]
+        if remaining:
+            continue
+        values = current if isinstance(current, list) else [current]
+        for value in values:
+            if isinstance(value, str) and value not in allowed:
+                issues.append(
+                    ContractIssue(f"payload.{full_path}", "unsupported_value", "载荷字段值未在契约中登记")
+                )
+
+
 def validate_event(payload: Any, schema: Mapping[str, Any]) -> list[ContractIssue]:
     """返回稳定排序的问题列表，不修改输入。"""
     if not isinstance(payload, Mapping):
@@ -53,4 +84,6 @@ def validate_event(payload: Any, schema: Mapping[str, Any]) -> list[ContractIssu
         for field in schema.get("payload_required_by_event", {}).get(event_type, []):
             if field not in body:
                 issues.append(ContractIssue(f"payload.{field}", "required", "事件载荷缺少必填字段"))
+        for path, allowed in schema.get("payload_enums_by_event", {}).get(event_type, {}).items():
+            _check_enum_path(body, path, allowed, issues)
     return sorted(issues, key=lambda issue: (issue.field, issue.code))

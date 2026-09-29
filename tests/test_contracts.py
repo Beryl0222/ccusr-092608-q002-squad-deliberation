@@ -36,6 +36,44 @@ class ContractTests(unittest.TestCase):
         issues = validate_event(dict(self.sample, event_type="UNKNOWN"), self.schema)
         self.assertIn(("event_type", "unsupported_value"), [(x.field, x.code) for x in issues])
 
+    def test_nested_payload_enum_is_checked(self) -> None:
+        proposal = {
+            "event_id": "e-1",
+            "event_type": "PROPOSAL_SUBMITTED",
+            "aggregate_type": "lineup_proposal",
+            "aggregate_id": "p1",
+            "occurred_at": "2026-09-28T09:00:00+08:00",
+            "version": 1,
+            "payload": {
+                "competition_ref": "m1",
+                "proposed_by": "coach-li",
+                "roster": [{"athlete_id": "a1", "slot": "starter", "order": 1},
+                           {"athlete_id": "a2", "slot": "banished"}],
+            },
+        }
+        fields = [(x.field, x.code) for x in validate_event(proposal, self.schema)]
+        self.assertIn(("payload.roster.slot", "unsupported_value"), fields)
+
+    def test_medical_clearance_requires_medical_role(self) -> None:
+        event = {
+            "event_id": "e-2",
+            "event_type": "MEDICAL_CLEARANCE_GRANTED",
+            "aggregate_type": "athlete_profile",
+            "aggregate_id": "athlete-1",
+            "occurred_at": "2026-09-25T09:00:00+08:00",
+            "version": 1,
+            "payload": {
+                "subject_id": "athlete-1",
+                "granted_by": "coach-li",
+                "granted_by_role": "head_coach",
+                "restriction_ref": "r-1",
+            },
+        }
+        self.assertIn(
+            ("payload.granted_by_role", "unsupported_value"),
+            [(x.field, x.code) for x in validate_event(event, self.schema)],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

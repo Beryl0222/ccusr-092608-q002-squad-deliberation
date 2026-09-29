@@ -20,9 +20,16 @@
       "type": "string",
       "enum": [
         "EVIDENCE_RECORDED",
+        "MEDICAL_CLEARANCE_GRANTED",
+        "MEDICAL_CLEARANCE_REVOKED",
         "PROPOSAL_SUBMITTED",
         "OPINION_SIGNED",
+        "RECUSAL_DECLARED",
         "LINEUP_LOCKED",
+        "RECONSIDERATION_OPENED",
+        "RECALCULATION_TRIGGERED",
+        "COMMITMENT_RECORDED",
+        "COMMITMENT_FULFILLED",
         "REVIEW_COMPLETED"
       ]
     },
@@ -52,18 +59,127 @@
     }
   },
   "payload_required_by_event": {
+    "EVIDENCE_RECORDED": [
+      "subject_id",
+      "evidence_kind",
+      "observed_at"
+    ],
+    "MEDICAL_CLEARANCE_GRANTED": [
+      "subject_id",
+      "granted_by",
+      "granted_by_role",
+      "restriction_ref"
+    ],
+    "MEDICAL_CLEARANCE_REVOKED": [
+      "subject_id",
+      "revoked_by",
+      "restriction_ref"
+    ],
     "PROPOSAL_SUBMITTED": [
       "competition_ref",
-      "roster"
+      "roster",
+      "proposed_by"
     ],
     "OPINION_SIGNED": [
+      "proposal_ref",
       "reviewer_role",
-      "position"
+      "position",
+      "signed_by"
+    ],
+    "RECUSAL_DECLARED": [
+      "competition_ref",
+      "reviewer",
+      "reason"
     ],
     "LINEUP_LOCKED": [
+      "proposal_ref",
+      "competition_ref",
       "evidence_cutoff",
-      "decision_reason"
+      "decision_reason",
+      "roster",
+      "receipt_id",
+      "locked_by",
+      "locked_by_role"
+    ],
+    "RECONSIDERATION_OPENED": [
+      "receipt_id",
+      "drift_fields",
+      "reason"
+    ],
+    "RECALCULATION_TRIGGERED": [
+      "trigger_event_refs",
+      "target_competition_ref",
+      "source_snapshot_ref"
+    ],
+    "COMMITMENT_RECORDED": [
+      "subject_id",
+      "description",
+      "due_at"
+    ],
+    "COMMITMENT_FULFILLED": [
+      "commitment_ref",
+      "fulfilled_at",
+      "outcome"
+    ],
+    "REVIEW_COMPLETED": [
+      "competition_ref",
+      "batch_id",
+      "reviewed_at"
     ]
+  },
+  "payload_enums_by_event": {
+    "EVIDENCE_RECORDED": {
+      "evidence_kind": [
+        "eligibility",
+        "training_load",
+        "match_sample",
+        "opponent_analysis",
+        "medical_restriction",
+        "coach_observation",
+        "development_goal",
+        "avoidance",
+        "post_match_feedback"
+      ]
+    },
+    "MEDICAL_CLEARANCE_GRANTED": {
+      "granted_by_role": [
+        "team_physician",
+        "medical_committee"
+      ]
+    },
+    "PROPOSAL_SUBMITTED": {
+      "roster.slot": [
+        "starter",
+        "substitute",
+        "hold"
+      ]
+    },
+    "OPINION_SIGNED": {
+      "reviewer_role": [
+        "head_coach",
+        "assistant_coach",
+        "team_physician",
+        "medical_committee",
+        "selectors_panel"
+      ],
+      "position": [
+        "support",
+        "object",
+        "abstain"
+      ]
+    },
+    "LINEUP_LOCKED": {
+      "locked_by_role": [
+        "head_coach",
+        "selectors_panel"
+      ]
+    },
+    "COMMITMENT_FULFILLED": {
+      "outcome": [
+        "on_time",
+        "late"
+      ]
+    }
   },
   "additionalProperties": false
 }

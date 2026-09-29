@@ -1,9 +1,15 @@
 {
   "event_id": "092601-002-sample-001",
   "event_type": "EVIDENCE_RECORDED",
-  "aggregate_type": "athlete_profile",
-  "aggregate_id": "squad_deliberation-001",
+  "aggregate_type": "selection_evidence",
+  "aggregate_id": "evidence-sample-001",
   "occurred_at": "2026-09-25T10:00:00+08:00",
   "version": 1,
-  "payload": {}
+  "payload": {
+    "subject_id": "athlete-001",
+    "evidence_kind": "match_sample",
+    "observed_at": "2026-09-20T19:30:00+08:00",
+    "summary": "近八场团体赛样本，胜负与关键分表现",
+    "source_ref": "match-2026-042"
+  }
 }
